@@ -1,5 +1,5 @@
 from fastapi import FastAPI, HTTPException, status
-
+from typing import List
 from models.db import db
 from models.models import Sheep
 
@@ -30,3 +30,7 @@ def update_sheep(id: int, updated_sheep: Sheep):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Sheep not found")
     db.data[id] = updated_sheep
     return updated_sheep
+
+@app.get("/sheep", response_model=List[Sheep])
+def get_all_sheep():
+    return list(db.data.values())

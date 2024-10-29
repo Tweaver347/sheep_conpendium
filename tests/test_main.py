@@ -36,23 +36,14 @@ def test_add_sheep():
     assert response.json() == new_sheep
 
 def test_delete_sheep():
-    # Step 1: Add a sheep to be deleted
-    sheep_to_delete = {
-        "id": 8,
-        "name": "Snowball",
-        "breed": "Suffolk",
-        "sex": "ewe"
-    }
-    response = client.post("/sheep", json=sheep_to_delete)
-    assert response.status_code == 201  # Ensure it was added successfully
-
-    # Step 2: Delete the sheep
-    delete_response = client.delete(f"/sheep/{sheep_to_delete['id']}")
+    # Step 1: Delete an existing sheep (using ID 1, which is "Spice")
+    delete_response = client.delete("/sheep/1")
     assert delete_response.status_code == 204  # Confirm deletion status
 
-    # Step 3: Try to retrieve the deleted sheep
-    get_response = client.get(f"/sheep/{sheep_to_delete['id']}")
+    # Step 2: Try to retrieve the deleted sheep
+    get_response = client.get("/sheep/1")
     assert get_response.status_code == 404  # Confirm sheep no longer exists
+
 
 def test_update_sheep():
     # Step 1: Add a sheep to be updated
@@ -80,3 +71,12 @@ def test_update_sheep():
     get_response = client.get(f"/sheep/{updated_sheep['id']}")
     assert get_response.status_code == 200  # Ensure the sheep still exists
     assert get_response.json() == updated_sheep  # Confirm the data is updated
+
+def test_get_all_sheep():
+    # Step 1: Retrieve all sheep
+    response = client.get("/sheep")
+
+    # Step 2: Verify the status code and response content
+    assert response.status_code == 200
+    assert isinstance(response.json(), list)  # Ensure the response is a list
+    assert len(response.json()) >= 1  # Check that there is at least one sheep in the response
