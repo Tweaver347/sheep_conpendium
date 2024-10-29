@@ -17,3 +17,9 @@ db.data = {
     5: Sheep(id=5, name="Vala", breed="Valais Blacknose", sex="ewe"),
     6: Sheep(id=6, name="Esther", breed="Border Leicester", sex="ewe"),
 }
+
+def add_sheep(self, sheep: Sheep) -> Sheep:
+    if sheep.id in self.data:
+        raise ValueError("Sheep with this ID Already Exists")
+    self.data[sheep.id] = sheep
+    return sheep

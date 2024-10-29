@@ -19,22 +19,64 @@ def test_read_sheep():
 
 #Define a test function for adding a new sheep
 def test_add_sheep():
-    #TODO: Prepare the new sheep data in a dictionary format
     new_sheep = {
         "id": 7,
         "name": "Luna",
         "breed": "Merino",
         "sex": "ewe"
     }
-    #TODO: Send a POST request to the endpoint "/sheep" with the new sheep data.
-    # Arguments should be your endpoint and new sheep data
     response = client.post("/sheep", json=new_sheep)
-    #TODO: Assert that the response status code is 201 (Created)
+
     assert response.status_code == 201
-    #TODO: Assert that the response JSON matches the new sheep data
     assert response.json() == new_sheep
-    #TODO: Verify that the sheep was actually added to the database by retrieving the new sheep by ID.
-    # include an assert statement to see if the new sheep data can be retrieved
+
     response = client.get(f"/sheep/{new_sheep['id']}")
+
     assert response.status_code == 200
     assert response.json() == new_sheep
+
+def test_delete_sheep():
+    # Step 1: Add a sheep to be deleted
+    sheep_to_delete = {
+        "id": 8,
+        "name": "Snowball",
+        "breed": "Suffolk",
+        "sex": "ewe"
+    }
+    response = client.post("/sheep", json=sheep_to_delete)
+    assert response.status_code == 201  # Ensure it was added successfully
+
+    # Step 2: Delete the sheep
+    delete_response = client.delete(f"/sheep/{sheep_to_delete['id']}")
+    assert delete_response.status_code == 204  # Confirm deletion status
+
+    # Step 3: Try to retrieve the deleted sheep
+    get_response = client.get(f"/sheep/{sheep_to_delete['id']}")
+    assert get_response.status_code == 404  # Confirm sheep no longer exists
+
+def test_update_sheep():
+    # Step 1: Add a sheep to be updated
+    original_sheep = {
+        "id": 9,
+        "name": "Shadow",
+        "breed": "Black Welsh Mountain",
+        "sex": "ram"
+    }
+    response = client.post("/sheep", json=original_sheep)
+    assert response.status_code == 201  # Ensure it was added successfully
+
+    # Step 2: Update the sheep's data
+    updated_sheep = {
+        "id": 9,  # Same ID to ensure we're updating, not creating a new one
+        "name": "Shadowfax",
+        "breed": "Black Welsh Mountain",
+        "sex": "ram"
+    }
+    update_response = client.put(f"/sheep/{original_sheep['id']}", json=updated_sheep)
+    assert update_response.status_code == 200  # Confirm update status
+    assert update_response.json() == updated_sheep  # Confirm data matches updated sheep
+
+    # Step 3: Verify the update in the database
+    get_response = client.get(f"/sheep/{updated_sheep['id']}")
+    assert get_response.status_code == 200  # Ensure the sheep still exists
+    assert get_response.json() == updated_sheep  # Confirm the data is updated
